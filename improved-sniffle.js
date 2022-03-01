@@ -6,7 +6,7 @@ function curry(fn) {
     };
 }
 function union(objects) {
-    return objects.reduce((l,r)=>Object.assign(l,r));
+    return objects.reduce((l,r)=>Object.assign(l,r),{});
 }
 function outerApply(method,left,right) {
   return [Object
@@ -18,13 +18,13 @@ function outerApply(method,left,right) {
     .filter(key=>typeof right[key]==='undefined')
     .map(key=>({[key]:method(right[key])}))
   ].flat()
-    .reduce((l,r)=>Object.assign(l,r));
+    .reduce((l,r)=>Object.assign(l,r),{});
 }
 
-function innerApply(method,left,right) {
-return Object
-  .keys(left)
-  .filter(key=>typeof right[key] !== 'undefined')
-  .map(key=>({[key]:method(left[key],right[key])}))
-  .reduce((l,r)=>Object.assign(l,r));
-}
+  function innerApply(method,left,right) {
+    return Object
+      .keys(left)
+      .filter(key=>typeof right[key] !== 'undefined')
+      .map(key=>({[key]:method(left[key],right[key])}))
+      .reduce((l,r)=>Object.assign(l,r),{});
+  }
