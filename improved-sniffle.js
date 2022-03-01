@@ -14,3 +14,11 @@
       ].flat()
         .reduce((l,r)=>Object.assign(l,r));
     }
+
+  function innerApply(method,left,right) {
+    return Object
+      .keys(left)
+      .filter(key=>typeof right[key] !== 'undefined')
+      .map(key=>({[key]:method(left[key],right[key])}))
+      .reduce((l,r)=>Object.assign(l,r));
+  }
