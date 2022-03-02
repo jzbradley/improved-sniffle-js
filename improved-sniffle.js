@@ -1,3 +1,38 @@
+
+const maskPattern=function(bits){
+    let mask=0;
+    if (typeof bits==='number') {
+        for(let i=0;i<bits;i++) {
+            mask|=1<<i;
+        }
+        return mask;
+    }
+    bits=[...bits];
+    const repeat=bits.length;
+    const pattern=bits.map((c,i)=>[c,i]).filter(e=>e[0]==='1').reduce((l,r)=>l|1<<r[1],0);
+    for(let i=0;i<32;i+=repeat){
+        mask|=pattern<<i;
+    }
+    return mask;
+}
+maskPattern.d2u1=maskPattern('001');
+maskPattern.d4u2=maskPattern('000011');
+maskPattern.d8u4=maskPattern('000000001111');
+maskPattern.d16u8=maskPattern('000000000000000011111111');
+maskPattern.b10=maskPattern(10);
+// Deinterleaves interleaved bits
+const deinterleave3 = function (v) {
+    function component(v,n) {
+        v = (v >>> n)       & maskPattern.d2u1;
+        v = (v | (v>>>2))   & maskPattern.d4u2;
+        v = (v | (v>>>4))   & maskPattern.d8u4;
+        v = (v | (v>>>8))   & maskPattern.d16u8;
+        v = (v | (v>>>16))  & maskPattern.b10;
+        return (v<<22)>>22;
+    }
+    return [component(v,0),component(v,1),component(v,2)];
+}
+
 // Overdoing it.
 const parseIntWords=(()=>{
     const tens={ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19};
