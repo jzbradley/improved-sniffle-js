@@ -1,14 +1,20 @@
-// Generator > Array
 class Iterable {
-    *[Symbol.iterator]() {
-        return this.generator||(function*(){return;});
+    #iterator;
+    [Symbol.iterator]() {
+        return this.#iterator;
     }
-    constructor(generator) {
-        this.generator=generator||(function*(){return;});
+    constructor(source) {
+        if(source[Symbol.iterator]){
+            this.#iterator=source[Symbol.iterator]();
+            return this;
+        }
+        if(typeof(source)==="function") {
+            return new Iterable(source());
+        }
     }
     map(callbackfn){
         const self=this;
-        return new Iterator(function*(){
+        return new Iterable(function*(){
             for(const value of self) {
                 yield callbackfn(value);
             }
@@ -16,7 +22,7 @@ class Iterable {
     }
     filter(callbackfn){
         const self=this;
-        return new Iterator(function*(){
+        return new Iterable(function*(){
             for(const value of self) {
                 if (callbackfn(value)) yield value;
             }
@@ -47,24 +53,24 @@ class Iterable {
     }
 
     take(count) {
-        return new Iterator(function*(){
+        return new Iterable(function*(){
             let i=0;
             for (const value of self) (i<count)?yield(value):++i;
         });
     }
     skip(count) {
-        return new Iterator(function*(){
+        return new Iterable(function*(){
             let i=0;
             for (const value of self) (i<count)?++i:yield(value);
         });
     }
     
     static from(source) {
-        if (source[Symbol.iterator]) return new Iterator(source[Symbol.iterator])
+        if (source[Symbol.iterator]) return new Iterable(source)
     }
         
     static range(start = 0, count = Infinity, step = 1) {
-        return new Iterator(function*(){
+        return new Iterable(function*(){
             let i = start;
             for (let progress = 0; progress < count; progress++) {
                 yield i;
@@ -75,7 +81,7 @@ class Iterable {
     }
 
     static repeat(value, count = Infinity) {
-        return new Iterator(function*(){
+        return new Iterable(function*(){
             for (let i = 0; i < count; i++) {
                 yield value;
             }
