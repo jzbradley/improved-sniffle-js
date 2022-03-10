@@ -52,6 +52,9 @@ class Iterable {
         return this.toArray().join(separator);
     }
 
+    first(predicate) {
+        return this.filter(predicate).take(1).toArray()[0];
+    }
     take(count) {
         return new Iterable(function*(){
             let i=0;
@@ -66,7 +69,7 @@ class Iterable {
     }
     
     static from(source) {
-        if (source[Symbol.iterator]) return new Iterable(source)
+        if (source[Symbol.iterator]) return new Iterable(source);
     }
         
     static range(start = 0, count = Infinity, step = 1) {
@@ -86,5 +89,18 @@ class Iterable {
                 yield value;
             }
         });
+    }
+
+    static query(dom=document) {
+        return new class DomQuery {
+            all(selector) {
+                if (typeof selector == 'function') return new Iterable(dom.querySelectorAll('*')).filter(selector);
+                return new Iterable(dom.querySelectorAll(selector||'*'));
+            }
+            one(selector) {
+                if (typeof selector == 'function') return new Iterable(dom.querySelectorAll('*')).first(selector);
+                return dom.querySelector(selector||'*');
+            }
+        };
     }
 }
