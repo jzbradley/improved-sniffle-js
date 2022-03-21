@@ -17,3 +17,13 @@ const query=(selector,target=document)=>target.querySelectorAll(selector)
 query.group=(headSelector,neighborSelectors,target=document)=>{
     return zip(...[query(headSelector,target),...neighborSelectors.map(s=>query(headSelector+s,target))]);
 }
+
+// shorthand for fetching json info
+JSON.load=uri=>fetch(uri).then(response=>response.json())
+
+// enables fetching pages straight into Document objects
+//    fetch(...).then(rx=>rx.html())
+Response.prototype.html=function(){ return this.text().then(text=>new DOMParser().parseFromString(text, "text/html")); }
+//    fetch(...).then(rx=>rx.xml())
+Response.prototype.xml=function(){ return this.text().then(text=>new DOMParser().parseFromString(text, "application/xml")); }
+
