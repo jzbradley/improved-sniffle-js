@@ -27,3 +27,5 @@ Response.prototype.html=function(){ return this.text().then(text=>new DOMParser(
 //    fetch(...).then(rx=>rx.xml())
 Response.prototype.xml=function(){ return this.text().then(text=>new DOMParser().parseFromString(text, "application/xml")); }
 
+// Load chai.js
+eval(await (await fetch('https://cdnjs.cloudflare.com/ajax/libs/chai/4.3.6/chai.min.js')).text());
