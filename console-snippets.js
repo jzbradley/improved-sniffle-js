@@ -27,5 +27,10 @@ Response.prototype.html=function(){ return this.text().then(text=>new DOMParser(
 //    fetch(...).then(rx=>rx.xml())
 Response.prototype.xml=function(){ return this.text().then(text=>new DOMParser().parseFromString(text, "application/xml")); }
 
-// Load chai.js
-eval(await (await fetch('https://cdnjs.cloudflare.com/ajax/libs/chai/4.3.6/chai.min.js')).text());
+// Script.load
+if (!Script) window.Script={};
+Script.load=uri=>{ eval(await (await fetch(uri)).text()); return Script.load; }
+
+Script.load('https://cdnjs.cloudflare.com/ajax/libs/chai/4.3.6/chai.min.js');
+Script.load('https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js');
+Script.load('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js');
