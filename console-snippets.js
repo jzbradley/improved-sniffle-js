@@ -28,8 +28,13 @@ Response.prototype.html=function(){ return this.text().then(text=>new DOMParser(
 Response.prototype.xml=function(){ return this.text().then(text=>new DOMParser().parseFromString(text, "application/xml")); }
 
 // Script.load
-if (!Script) window.Script={};
-Script.load=uri=>{ eval(await (await fetch(uri)).text()); return Script.load; }
+if (typeof Script==='undefined') window.Script={};
+Script.load=function(uri) {
+    fetch(uri)
+    .then(rx=>rx.text())
+    .then(text=>eval(text));
+    return Script.load;
+};
 
 Script.load('https://cdnjs.cloudflare.com/ajax/libs/chai/4.3.6/chai.min.js');
 Script.load('https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js');
