@@ -30,12 +30,11 @@ Response.prototype.xml=function(){ return this.text().then(text=>new DOMParser()
 // Script.load
 if (typeof Script==='undefined') window.Script={};
 Script.load=function(uri) {
-    fetch(uri)
+    return fetch(uri)
     .then(rx=>rx.text())
     .then(text=>eval(text));
     return Script.load;
 };
 
 Script.load('https://cdnjs.cloudflare.com/ajax/libs/chai/4.3.6/chai.min.js');
-Script.load('https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js');
 Script.load('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js');
