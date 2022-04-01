@@ -3,6 +3,32 @@ function inferSchema(obj) {
     else throw new TypeError("non-xml objects not supported")
 }
 
+inferSchema.deepMerge=function () {
+    merge = function () {
+        let [target] = arguments;
+        for (let i = 1; i < arguments.length ; i++) {
+            let arr = arguments[i];
+            for (let k in arr) {
+                if (Array.isArray(arr[k])) {
+                    if (target[k] === undefined) {            
+                        target[k] = [];
+                    }            
+                    target[k] = [...new Set(target[k].concat(...arr[k]))];
+                } else if (typeof arr[k] === 'object') {
+                    if (target[k] === undefined) {            
+                        target[k] = {};
+                    }
+                    target[k] = merge(target[k], arr[k]);
+                } else {
+                    target[k] = arr[k];         
+                }
+            }
+        }
+        return target;
+    }
+    return merge(...arguments);
+};
+
 function inferXmlSchema(node) {
     const schema={};
 
@@ -20,36 +46,12 @@ function inferXmlSchema(node) {
             descendents:inferXmlSchema(element)
         };
         if (schema[nodeName]) {
-            deepmerge(schema[nodeName],info);
+            inferSchema.deepMerge(schema[nodeName],info);
             continue;
         }
         schema[nodeName]=info;
     }
     return schema;
     
-    function deepmerge() {
-        merge = function () {
-            let [target] = arguments;
-            for (let i = 1; i < arguments.length ; i++) {
-                let arr = arguments[i];
-                for (let k in arr) {
-                    if (Array.isArray(arr[k])) {
-                        if (target[k] === undefined) {            
-                            target[k] = [];
-                        }            
-                        target[k] = [...new Set(target[k].concat(...arr[k]))];
-                    } else if (typeof arr[k] === 'object') {
-                        if (target[k] === undefined) {            
-                            target[k] = {};
-                        }
-                        target[k] = merge(target[k], arr[k]);
-                    } else {
-                        target[k] = arr[k];         
-                    }
-                }
-            }
-            return target;
-        }
-        return merge(...arguments);
-    }
+    
 }
