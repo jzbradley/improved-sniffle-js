@@ -43,6 +43,6 @@ const Random={
         return result;
     },
     guid() {
-        return BigInt('0x'+Array.from({length:16},()=>Random.pick("0123456789abcdef")).join(''));
+        return BigInt('0x'+Array.from({length:32},()=>Random.pick("0123456789abcdef")).join(''));
     }
 };
