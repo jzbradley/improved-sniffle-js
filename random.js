@@ -24,6 +24,7 @@ const Random={
     pick(obj,...args) {
         if (typeof obj==='undefined') return undefined;
         obj=obj instanceof [].constructor?obj
+            : typeof obj ==='string' ? Array.from(obj)
             : Object.entries(obj);
         switch(args.length) {
             case 0: return obj[Random.int(obj.length)];
@@ -40,5 +41,8 @@ const Random={
             result.splice(destination,0,element);
         }
         return result;
+    },
+    guid() {
+        return BigInt('0x'+Array.from({length:16},()=>Random.pick("0123456789abcdef")).join(''));
     }
 };
