@@ -21,6 +21,9 @@ const Random={
             }
         }
     },
+    // pick(array) // pick one random element from array
+    // pick(array,2) // pick an element from array between index 0 and 2 exclusive
+    // pick(array,1,4) // pick an element from array between index 1 and 4 exclusive
     pick(obj,...args) {
         if (typeof obj==='undefined') return undefined;
         obj=obj instanceof [].constructor?obj
@@ -30,6 +33,9 @@ const Random={
             case 0: return obj[Random.int(obj.length)];
             default: return obj[Random.int(args)];
         }
+    },
+    take(array,count){
+        return Array.from({length:count},()=>Random.pick(array));
     },
     shuffle(array) {
         if (array.length==0) return [];
@@ -43,6 +49,12 @@ const Random={
         return result;
     },
     guid() {
-        return BigInt('0x'+Array.from({length:32},()=>Random.pick("0123456789abcdef")).join(''));
+        return crypto.randomUUID?crypto.randomUUID()
+            :make();
+        function make() {
+            const hexString = [..."0123456789abcdef"];
+            return `${chars(8)}-${chars(4)}-${chars(4)}-${chars(4)}-${chars(12)}`
+            function chars(count) { return Random.take(hexString, count); }
+        }
     }
 };
