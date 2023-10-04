@@ -34,8 +34,11 @@ class HTMLViewSelectorElement extends HTMLViewForElement {
 }
 class HTMLViewOptionElement extends HTMLViewForElement {
   static get tagName() { return "view-option"; }
+  #eventSet=false;
   connectedCallback() {
+    if (this.#eventSet) return;
     this.addEventListener('click',this.#clicked);
+    this.#eventSet=true;
   }
   #clicked(ev){
     var selector=selectAncestorOf(this, HTMLViewSelectorElement.tagName);
