@@ -31,28 +31,26 @@ class Stack {
       this.#array[i]=items[i];
     this.#length+=items.length;
   }
-  pop(count=1) {
+  pop(count=1,destination=undefined) {
     const self=this;
     switch(true) {
       case count<0: throw new RangeError("cannot pop a negative number of items");
-      case count===0: return null;
-      case count===1: {
-        this.#changed();
-        return popOne();
-      }
+      case count===0: return destination||null;
     }
-    if ('List' in globalThis) {
-      const list=new globalThis.List(Math.max(4,count));
+    if (typeof destination===undefined) {
+      const array=Array.from({length:count});
       this.#changed();
       for(let i=0;i<count;++i)
-        list.push(popOne());
-      return list;
+        array[i]=popOne();
+      return array;
     }
-    const array=Array.from({length:count});
+
+    if (!('push' in destination) || typeof destination.push !=='function')
+      throw new Error("Expected 'destination' to have 'push' method.")
     this.#changed();
     for(let i=0;i<count;++i)
-      array[i]=popOne();
-    return array;
+      destination.push(popOne());
+    return destination;
 
     function popOne() {
       --self.#length;
