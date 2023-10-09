@@ -1,5 +1,5 @@
 /**
- * An array-like dynamioc data structure which pre-allocates space
+ * An array-like dynamic data structure which pre-allocates space
  * in order to reduce the number of array re-allocations.
  */
 class List {
