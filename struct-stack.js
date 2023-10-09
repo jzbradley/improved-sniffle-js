@@ -19,6 +19,10 @@ class Stack {
   constructor(capacity=4) {
     this.#array=Array.from({length:capacity||0});
   }
+  get top() {
+    if (this.length===0) return undefined;
+    return this.#array[this.length-1];
+  }
   push(...items) {
     if (items.length===0) return;
     this.#changed();
