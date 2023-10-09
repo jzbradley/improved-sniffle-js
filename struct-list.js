@@ -9,11 +9,13 @@ class List {
   #changed() {
     ++this.#version;
   }
-  #ensureCapacity(minLength) {
+  ensureCapacity(minLength) {
     if (minLength <= this.#length) return;
     this.#array.length *= 2;
     this.#changed();
   }
+  get capacity() { return this.#array.length; }
+
   get version() { return this.#version; }
   get length() { return this.#length; }
   set length(value) {
@@ -93,14 +95,14 @@ class List {
   push(...items) {
     if (items.length===0) return;
     this.#changed();
-    this.#ensureCapacity(this.#length+items.length);
+    this.ensureCapacity(this.#length+items.length);
     for(let i=0;i<items.length;i++)
       this.#array[i]=items[i];
     this.#length+=items.length;
   }
-  slice(start=0,end=-1) {
-    [start,end,span]=this.#validateRange(start,end);
-    if (span===0) return new List();
+  slice(start=0, end=-1, destination=undefined) {
+    [start,end,span]=List.#validateRange(this.#length,start,end);
+    if (span===0) return destination || new List();
     const result = new List(Math.max(4,start-end));
     result.push(...this.#array.slice(start,end));
     return result;
@@ -108,7 +110,7 @@ class List {
   pop(start=0,end=-1) {
     let span=0;
     let tail=0;
-    [start,end,span,tail]=this.#validateRange(start,end);
+    [start,end,span,tail]=List.#validateRange(this.#length,start,end);
     if (span===0) return;
     const result=this.#array.slice(start,end);
     this.#changed();
@@ -123,19 +125,18 @@ class List {
   }
 
   fill(value,start=0,end=-1) {
-    [start,end,span,tail]=this.#validateRange(start,end);
+    [start,end,span,tail]=List.#validateRange(this.#length,start,end);
     if (span===0) return;
     this.#changed();
     for(let i=start;i<=end;++i)
       this.#array[i]=value;
   }
 
-  #validateRange(start,end) {
-    const len=this.#length;
-    [start,end]=[(len+start)%len,(len+end)%len];
-    if (start<0 || start>=len) throw new RangeError("index 'start' out of range");
-    if (end<0 || end >= len) throw new RangeError("index 'end' out of range");
+  static #validateRange(length, start, end) {
+    [start,end]=[(length+start)%length,((length+end)+1)%(length+1)];
+    if (start<0 || start>=length) throw new RangeError(`index 'start' out of range [-${length},${length})`);
+    if (end<0 || end > length) throw new RangeError(`index 'end' out of range (-${length},${length}]`);
     if (start>end) [end,start]=[start,end];
-    return[start,end,end-start,len-end];
+    return[start,end,end-start,length-end];
   }
 }
