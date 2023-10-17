@@ -1,5 +1,6 @@
+
 /**
- * An traditional stack-like data structure which pre-allocates space
+ * A traditional stack-like data structure which pre-allocates space
  * in order to reduce the number of array re-allocations.
  */
 class Stack {
@@ -10,7 +11,7 @@ class Stack {
     ++this.#version;
   }
   #ensureCapacity(minLength) {
-    if (minLength <= this.#length) return;
+    if (minLength <= this.#array.length) return;
     this.#array.length *= 2;
     this.#changed();
   }
@@ -27,36 +28,15 @@ class Stack {
     if (items.length===0) return;
     this.#changed();
     this.#ensureCapacity(this.#length+items.length);
-    for(let i=0;i<items.length;i++)
-      this.#array[i]=items[i];
-    this.#length+=items.length;
+    for(let i=0;i<items.length;i++) {
+      this.#array[this.#length]=items[i];
+      ++this.#length;
+    }
   }
-  pop(count=1,destination=undefined) {
-    const self=this;
-    switch(true) {
-      case count<0: throw new RangeError("cannot pop a negative number of items");
-      case count===0: return destination||null;
-    }
-    if (typeof destination===undefined) {
-      const array=Array.from({length:count});
-      this.#changed();
-      for(let i=0;i<count;++i)
-        array[i]=popOne();
-      return array;
-    }
-
-    if (!('push' in destination) || typeof destination.push !=='function')
-      throw new Error("Expected 'destination' to have 'push' method.")
-    this.#changed();
-    for(let i=0;i<count;++i)
-      destination.push(popOne());
-    return destination;
-
-    function popOne() {
-      --self.#length;
-      const result=self.#array[self.#length];
-      self.#array[self.#length]=undefined;
-      return result;
-    }
+  pop() {
+    --this.#length;
+    const result=this.#array[this.#length];
+    this.#array[this.#length]=undefined;
+    return result;
   }
 }
